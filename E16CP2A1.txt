@@ -1,0 +1,64 @@
+CREATE DATABASE pintagram;
+\c pintagram;
+CREATE TABLE users (user_id SERIAL PRIMARY KEY, username VARCHAR(64) NOT NULL);
+CREATE TABLE images (id SERIAL PRIMARY KEY, picture VARCHAR(64) NOT NULL, user_id integer REFERENCES users (user_id));
+CREATE TABLE tags (id SERIAL PRIMARY KEY, content VARCHAR(64) NOT NULL, story_id integer REFERENCES images (id), UNIQUE (id, content));
+CREATE TABLE likes (id SERIAL PRIMARY KEY, user_id integer REFERENCES users (user_id), image_id integer REFERENCES images (id), UNIQUE (user_id, image_id));
+
+*INSERT USERS*
+INSERT INTO users VALUES(1, 'sebapobletec');
+INSERT INTO users VALUES(2, 'isapetit');
+INSERT INTO users VALUES(2, 'fepobletec');
+
+*INSERT IMAGES*
+INSERT INTO images VALUES (1, 'perro.jpg',1);
+INSERT INTO images VALUES (2, 'gato.jpg',1);
+INSERT INTO images VALUES (3, 'blanco.jpg',2);
+INSERT INTO images VALUES (4, 'negro.jpg',2);
+INSERT INTO images VALUES (5, 'pera.jpg',3);
+INSERT INTO images VALUES (6, 'manzana.jpg',3);
+
+*INSERT LIKES*
+INSERT INTO likes VALUES (1, 1, 1);
+INSERT INTO likes VALUES (2, 2, 1);
+INSERT INTO likes VALUES (3, 3, 1);
+INSERT INTO likes VALUES (4, 1, 2);
+INSERT INTO likes VALUES (5, 2, 2);
+INSERT INTO likes VALUES (6, 3, 2);
+INSERT INTO likes VALUES (7, 1, 3);
+INSERT INTO likes VALUES (8, 2, 3);
+INSERT INTO likes VALUES (9, 3, 3);
+
+
+*INSERT TAGS*
+INSERT INTO tags VALUES (1, '#QUELINDO', 1);
+INSERT INTO tags VALUES (2, '#QUEFEO', 1);
+INSERT INTO tags VALUES (3, '#TAG', 1);
+INSERT INTO tags VALUES (4, '#MEGUSTA', 2);
+INSERT INTO tags VALUES (5, '#NOMEGUSTA', 2);
+INSERT INTO tags VALUES (6, '#BIEN', 2);
+INSERT INTO tags VALUES (7, '#MAL', 3);
+INSERT INTO tags VALUES (8, '#QUEFEO', 3);
+INSERT INTO tags VALUES (9, '#TAG', 3);
+INSERT INTO tags VALUES (10, '#BIEN', 4);
+INSERT INTO tags VALUES (11, '#MAL', 4);
+INSERT INTO tags VALUES (12, '#QUEFEO', 4);
+INSERT INTO tags VALUES (13, '#TAG', 5);
+INSERT INTO tags VALUES (14, '#QUELINDO', 5);
+INSERT INTO tags VALUES (15, '#QUEFEO', 5);
+INSERT INTO tags VALUES (16, '#TAG', 6);
+INSERT INTO tags VALUES (17, '#QUELINDO', 6);
+INSERT INTO tags VALUES (18, '#QUEFEO', 6);
+
+
+ALTER TABLE tags
+RENAME story_id TO image_id;
+
+*Crear una consulta que muestre el nombre de la imagen y la cantidad de likes que tiene esa imagen*
+SELECT picture, COUNT (likes.id) AS "likes" FROM images INNER JOIN likes ON (image_id =images.id) GROUP BY picture;
+
+*Crear una consulta que muestre el nombre del usuario y los nombres de las fotos que le pertenecen*
+SELECT username, picture FROM users INNER JOIN images ON (users.user_id = images.user_id);
+
+*Crear una consulta que muestre el nombre del tag y la cantidad de imagenes asociadas a ese tag.
+SELECT content, COUNT (image_id) AS "images" FROM tags GROUP BY content;
